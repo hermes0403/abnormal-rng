@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d18"><title>異常RNG</title>
+
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#111a2b;--line:#263650;--muted:#8fa1bc;--cyan:#71e7ff;--gold:#f5d77b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#1a3151 0,#080d18 60%);color:#edf5ff;font:15px system-ui,"Noto Sans TC",sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;color:inherit;border:1px solid #344966;background:#17243a;border-radius:10px;padding:10px 14px}button:hover{border-color:var(--cyan)}button:disabled{opacity:.45;cursor:not-allowed}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid #22324a;background:#080d18cc;position:sticky;top:0;z-index:3;backdrop-filter:blur(12px)}.brand{font-weight:900;letter-spacing:.12em}.brand span{color:var(--cyan)}.status{color:var(--muted);font-size:12px}
+main{max-width:1440px;margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(290px,1fr);gap:14px}
+.panel{background:linear-gradient(145deg,#111b2cdd,#0b1220f2);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.scene{min-height:390px;position:relative;overflow:hidden;background:linear-gradient(#101d38 0%,#253d5a 54%,#334d43 55%,#182b29 100%);display:flex;align-items:center;justify-content:center}
+.scene:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#9deaff28,transparent 35%),linear-gradient(180deg,transparent 60%,#07111c88)}.moon{position:absolute;width:82px;height:82px;right:13%;top:12%;border-radius:50%;background:#c8e9ff;box-shadow:0 0 45px #a3dcff88}
+.mountain{position:absolute;bottom:30%;width:0;height:0;border-left:190px solid transparent;border-right:190px solid transparent;border-bottom:190px solid #23344a;opacity:.9}.mountain.m2{left:3%;transform:scale(.75);border-bottom-color:#1b2b40}.mountain.m3{right:0;transform:scale(.9);border-bottom-color:#2a4051}
+.ground{position:absolute;bottom:-18%;left:-10%;width:120%;height:48%;border-radius:50% 50% 0 0;background:linear-gradient(#294c42,#101f25);border-top:2px solid #5d8a77}
+.avatar{z-index:1;position:relative;width:112px;height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}.orb{width:76px;height:76px;border-radius:50%;border:2px solid #8cecff;background:radial-gradient(circle,#e6fdff 0,#71e7ff 20%,#4c77ff 48%,#121c43 72%);box-shadow:0 0 25px #71e7ff,0 0 65px #596bff88;animation:float 2.8s ease-in-out infinite}.body{width:50px;height:65px;border-radius:20px 20px 12px 12px;background:linear-gradient(90deg,#273c59,#9ab3c7,#23374d);border:1px solid #adc5dc88}.playername{font-size:12px;background:#08111dcc;padding:4px 8px;border-radius:7px;border:1px solid #39516a}@keyframes float{50%{transform:translateY(-8px) scale(1.04);filter:hue-rotate(20deg)}}
+.scene-label{position:absolute;left:16px;top:14px;color:#d4eaff;font-size:12px;letter-spacing:.16em}.scene-foot{position:absolute;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;color:#d0e4f0;font-size:12px}
+.rollbox{text-align:center;padding:16px 4px 4px}.eyebrow{color:var(--muted);font-size:11px;letter-spacing:.18em}.result{font-size:clamp(22px,4vw,38px);font-weight:900;margin:8px 0;text-shadow:0 0 22px #71e7ff66}.rarity{color:var(--cyan);font-size:13px}.rollbtn{background:linear-gradient(110deg,#2d8da6,#5857bd);border:0;font-weight:900;font-size:18px;padding:14px 34px;min-width:180px;box-shadow:0 6px 30px #286b9970}.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:#0a1321;border:1px solid #23344b;border-radius:12px;padding:12px}.stat b{display:block;font-size:21px;margin-top:4px}.muted{color:var(--muted)}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{border-color:var(--cyan);color:var(--cyan);background:#112a3a}.list{display:flex;flex-direction:column;gap:7px;max-height:310px;overflow:auto}.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px;border-radius:10px;background:#0a1321;border:1px solid #24344a}.item small{display:block;color:var(--muted);margin-top:3px}.item button{padding:7px 10px;font-size:12px}.wide{grid-column:1/-1}.notice{border:1px solid #594f31;background:#2a2518;color:#f5dda0;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.6}.hidden{display:none}.formrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.formrow input{min-width:0;flex:1;background:#080f1c;color:white;border:1px solid #31445e;border-radius:9px;padding:10px}.footer{color:#657994;font-size:11px;text-align:center;padding:14px}
+@media(max-width:850px){main{grid-template-columns:1fr;padding:10px}.scene{min-height:300px}.wide{grid-column:auto}header{padding:12px}.desktoponly{display:none}}
+</style>
+</head>
+<body>
+<header><div><div class="brand">異常<span>RNG</span></div><div class="status">ANOMALY ARCHIVE · OUTDOOR LOBBY</div></div><div style="display:flex;gap:8px;align-items:center"><span id="userTag" class="status">訪客模式</span><button id="authOpen">登入 / 註冊</button></div></header>
+<main>
+<section>
+<div class="panel scene"><div class="scene-label">SECTOR 00 · THE OPEN FIELD</div><div class="moon"></div><div class="mountain m2"></div><div class="mountain"></div><div class="mountain m3"></div><div class="ground"></div><div class="avatar"><div class="orb" id="avatarOrb"></div><div class="body"></div><div class="playername" id="avatarName">未登入玩家</div></div><div class="scene-foot"><span>開放式室外共享大廳</span><span id="online">在線：本機預覽</span></div></div>
+<div class="panel rollbox"><div class="eyebrow">ANOMALY DETECTION / RNG</div><div class="result" id="resultName">等待第一次 Roll</div><div class="rarity" id="resultRarity">未知異常 · —</div><div class="actions"><button class="rollbtn" id="rollBtn">ROLL</button><button id="autoBtn">自動 Roll：關</button><button id="stopBtn" disabled>停止</button></div><p class="muted" style="font-size:12px">此版本為可操作的前端原型；尚未連接雲端抽取服務。</p></div>
+<div class="panel" style="margin-top:14px"><div class="tabs"><button class="active" data-tab="collection">收藏</button><button data-tab="dex">光環圖鑑</button><button data-tab="leaderboard">排行榜</button><button data-tab="profile">玩家資料</button></div><div id="tabContent"></div></div>
+</section>
+<aside>
+<div class="panel"><h3 style="margin-top:0">玩家狀態</h3><div class="grid"><div class="stat"><span class="muted">成功 Roll</span><b id="rollCount">0</b></div><div class="stat"><span class="muted">不同光環</span><b id="collectionCount">0</b></div><div class="stat"><span class="muted">圖鑑完成度</span><b id="completion">0%</b></div><div class="stat"><span class="muted">已裝備</span><b id="equippedStat">無</b></div></div></div>
+<div class="panel" style="margin-top:14px"><h3 style="margin-top:0">全服公告</h3><div class="item"><div><strong>異常訊號已啟動</strong><small>歡迎進入異常RNG測試大廳。</small></div></div><div class="notice" style="margin-top:10px">注意：這是第一版網站原型。登入、多人在線、全球排行榜及管理員權限在接上後端前不會被冒充為真實功能。</div></div>
+<div class="panel" style="margin-top:14px"><h3 style="margin-top:0">公共聊天室</h3><div id="chat" class="list"><div class="item"><div><strong>系統</strong><small>雲端聊天室尚未連接。</small></div></div></div><div class="formrow"><input id="chatInput" placeholder="輸入測試訊息…" maxlength="120"><button id="sendChat">送出</button></div></div>
+<div class="panel" style="margin-top:14px"><h3 style="margin-top:0">顯示設定</h3><div class="actions" style="justify-content:flex-start"><button id="fullscreen">全螢幕</button><button id="reduced">低特效：關</button><button id="install" class="hidden">安裝網站</button></div><p class="muted" style="font-size:12px">橫向鎖定與 PWA 安裝取決於瀏覽器及部署環境。</p></div>
+</aside>
+<div class="wide footer">異常RNG · 原創光環收集遊戲 · 開發預覽</div>
+</main>
+<div id="authModal" class="hidden" style="position:fixed;inset:0;background:#000b;z-index:10;display:none;align-items:center;justify-content:center;padding:16px"><div class="panel" style="width:min(420px,100%)"><div style="display:flex;justify-content:space-between;align-items:center"><h3>登入 / 註冊</h3><button id="authClose">關閉</button></div><div class="notice">原型版帳號表單不會建立真正帳號。請勿輸入真實密碼；正式登入需接入安全後端。</div><div class="formrow"><input id="account" placeholder="帳號名稱" maxlength="24"></div><div class="formrow"><input id="password" type="password" placeholder="密碼（原型不會傳送）"></div><div class="formrow"><input id="confirm" type="password" placeholder="確認密碼（註冊用）"></div><div class="actions"><button id="demoLogin">進入預覽</button></div></div></div>
+<script>
+const halos=[
+{id:'h1',name:'微光殘響',den:2,color:'#b5c7d8',tier:'常見',weight:50},
+{id:'h2',name:'青焰脈衝',den:8,color:'#71e7ff',tier:'少見',weight:25},
+{id:'h3',name:'裂隙行者',den:25,color:'#9e91ff',tier:'稀有',weight:15},
+{id:'h4',name:'日蝕王冠',den:100,color:'#f5d77b',tier:'史詩',weight:7},
+{id:'h5',name:'虛空潮汐',den:500,color:'#ff75cf',tier:'傳說',weight:2.5},
+{id:'h6',name:'零界觀測者',den:2500,color:'#ff684f',tier:'神話',weight:.5}
+];
+let rolls=0,found={},equipped=null,last=null,auto=null,reduced=false,username='預覽玩家';
+const $=id=>document.getElementById(id);
+function draw(){let total=halos.reduce((s,h)=>s+h.weight,0),r=Math.random()*total;return halos.find(h=>(r-=h.weight)<=0)||halos[0]}
+function update(){ $('rollCount').textContent=rolls;$('collectionCount').textContent=Object.keys(found).length;$('completion').textContent=Math.round(Object.keys(found).length/halos.length*100)+'%';$('equippedStat').textContent=equipped?.name||'無';$('avatarName').textContent=username;$('userTag').textContent=username;$('avatarOrb').style.background=`radial-gradient(circle,#fff 0,${equipped?.color||'#71e7ff'} 25%,#17213e 72%)`;$('avatarOrb').style.borderColor=equipped?.color||'#71e7ff';$('avatarOrb').style.boxShadow=reduced?'none':`0 0 25px ${equipped?.color||'#71e7ff'},0 0 65px ${equipped?.color||'#71e7ff'}88`;renderTab(document.querySelector('.tabs button.active')?.dataset.tab||'collection')}
+function roll(){let h=draw();rolls++;last=h;found[h.id]=(found[h.id]||0)+1;$('resultName').textContent=h.name;$('resultName').style.color=h.color;$('resultRarity').textContent=`${h.tier} · 1 / ${h.den.toLocaleString()}`;if(!equipped)equipped=h;update()}
+function renderTab(tab){let el=$('tabContent');if(tab==='collection'){let arr=halos.filter(h=>found[h.id]);el.innerHTML=arr.length?'<div class="list">'+arr.map(h=>`<div class="item"><div><strong style="color:${h.color}">${h.name}</strong><small>${h.tier} · 1 / ${h.den.toLocaleString()} · 獲得 ${found[h.id]} 次</small></div><button data-equip="${h.id}">${equipped?.id===h.id?'已裝備':'裝備'}</button></div>`).join('')+'</div>':'<p class="muted">還沒有收藏，按下 ROLL 開始探索。</p>'}
+else if(tab==='dex'){el.innerHTML='<div class="list">'+halos.map(h=>`<div class="item"><div><strong style="color:${found[h.id]?h.color:'#7b8aa0'}">${found[h.id]?h.name:'??? 未知異常'}</strong><small>${found[h.id]?h.tier+' · 1 / '+h.den.toLocaleString():'尚未發現'}</small></div><span>${found[h.id]?'已發現':'未發現'}</span></div>`).join('')+'</div>'}
+else if(tab==='leaderboard'){el.innerHTML='<p class="muted">全球排行榜需要連接雲端資料庫後才能顯示真實排名。</p><div class="list">'+['最稀有光環','光環收藏數','總 Roll 次數','圖鑑完成度','首次發現紀錄'].map(x=>`<div class="item"><strong>${x}</strong><span class="muted">尚未連線</span></div>`).join('')+'</div>'}
+else{el.innerHTML=`<div class="grid"><div class="stat">玩家名稱<b>${username}</b></div><div class="stat">Roll 次數<b>${rolls}</b></div><div class="stat">收藏種類<b>${Object.keys(found).length}</b></div><div class="stat">最高稀有度<b>${Object.keys(found).map(id=>halos.find(h=>h.id===id)).sort((a,b)=>b.den-a.den)[0]?.name||'尚無'}</b></div></div><p class="muted">目前為單次瀏覽器預覽，尚未雲端保存。</p>`}}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));renderTab(b.dataset.tab)});
+$('tabContent').onclick=e=>{let id=e.target.dataset.equip;if(id){equipped=halos.find(h=>h.id===id);update()}};
+$('rollBtn').onclick=roll;$('autoBtn').onclick=()=>{if(auto){clearInterval(auto);auto=null;$('autoBtn').textContent='自動 Roll：關';$('stopBtn').disabled=true}else{$('autoBtn').textContent='自動 Roll：開';$('stopBtn').disabled=false;auto=setInterval(roll,1800)}};$('stopBtn').onclick=()=>{clearInterval(auto);auto=null;$('autoBtn').textContent='自動 Roll：關';$('stopBtn').disabled=true};
+$('authOpen').onclick=()=>{let m=$('authModal');m.classList.remove('hidden');m.style.display='flex'};$('authClose').onclick=()=>{$('authModal').style.display='none'};$('demoLogin').onclick=()=>{let n=$('account').value.trim();if(n)username=n;$('authModal').style.display='none';update()};
+$('sendChat').onclick=()=>{let v=$('chatInput').value.trim();if(!v)return;let d=document.createElement('div');d.className='item';let c=document.createElement('div'),b=document.createElement('strong'),s=document.createElement('small');b.textContent=username;s.textContent=v;c.append(b,s);d.append(c);$('chat').prepend(d);$('chatInput').value='';};
+$('fullscreen').onclick=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){alert('此瀏覽器未允許全螢幕，遊戲仍可繼續使用。')}};
+$('reduced').onclick=()=>{reduced=!reduced;$('reduced').textContent='低特效：'+(reduced?'開':'關');update()};
+let installPrompt;$('install').onclick=()=>installPrompt?.prompt();window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('install').classList.remove('hidden')});
+
+update();
+</script>
+</body></html>
